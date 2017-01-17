@@ -31,9 +31,9 @@ _, e := clients.RetryPeriodic(
 		conn, err := net.Dial("tcp", "localhost:3000")
 		defer conn.Close()
 		if err != nil {
-			return nil, NonRetirableError{E:err}
+			return nil, clients.NonRetirableError{E:err}
 		}
-		return nil, RetirableError{E:err}
+		return nil, clients.RetirableError{E:err}
 	},
 	time.Duration(30)*time.Second,
 	time.Duration(1)*time.Second,
@@ -42,18 +42,54 @@ _, e := clients.RetryPeriodic(
 // Mix and match your own backoff and jitter tooling
 r, e := clients.Retry(
 	yourRetriableFunction,
-	&JitteredBackoff{
+	&clients.JitteredBackoff{
 		TTL:       time.Duration(1)*time.Second,
 		Initial:   time.Duration(10)*time.Millisecond,
 		MaxJitter: time.Duration(5)*time.Millisecond,
 		Bof:       func(round uint, t time.Duration) time.Duration {
 				// your impl
 		           },
-		Jf:        Jitter
+		Jf:        clients.Jitter
 	})
 
 ````
 
 A user can provide their own implementation of the PerishableWaiter interface for even more control over the backoff semantics and implementation.
 
+### Instrumented Retry
 
+An instrumented implementation of the Retry method is contributed by ````github.com/buildertools/svctools-go/clients/measured````. This package uses metrics from the ````github.com/rcrowley/go-metrics```` package. To use the instrumented Retry function see the following example:
+
+````
+import (
+	"github.com/rcrowley/go-metrics"
+	"github.com/buildertools/svctools-go/clients"
+	mclients "github.com/buildertools/svctools-go/clients/measured"
+)
+
+func main() {
+
+	attempts := metrics.NewCounter()
+	errors := metrics.NewCounter()
+	fatals := metrics.NewCounter()
+	totalTime := metrics.NewTimer()
+	attemptTime := metrics.NewTimer()
+
+	// Register the metrics or something
+
+	r, err := mclient.RetryExponential(
+		func() {
+			return clients.WrapHttpResponseError(http.Get(`http://someawsomeservice.com/v1/whatever`))
+		},
+		time.Duration(30)*time.Second,
+		time.Duration(50)*time.Millisecond,
+		time.Duration(50)*time.Millisecond,
+		mclient.Collectors(
+			AttemptCounter: attempts,
+			ErrorCounter:   errors,
+			FatalCounter:   fatals,
+			TotalTime:      totalTime,
+			AttemptTime:    attemptTime,
+		))
+}
+````
