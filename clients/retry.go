@@ -15,8 +15,8 @@
 package clients
 
 import (
-	"errors"
 	"context"
+	"errors"
 	"time"
 )
 
@@ -41,34 +41,33 @@ func Retry(f RetryFunc, pw PerishableWaiter) (interface{}, error) {
 
 func RetryPeriodic(f RetryFunc, timeout time.Duration, interval time.Duration, maxJitter time.Duration) (interface{}, error) {
 	return Retry(f, &JitteredBackoff{
-		TTL: timeout,
-		Initial: interval,
+		TTL:       timeout,
+		Initial:   interval,
 		MaxJitter: maxJitter,
-		Bof: ConstantBackoff,
-		Jf: Jitter,
+		Bof:       ConstantBackoff,
+		Jf:        Jitter,
 	})
 }
 
 func RetryLinear(f RetryFunc, timeout time.Duration, interval time.Duration, maxJitter time.Duration) (interface{}, error) {
 	return Retry(f, &JitteredBackoff{
-		TTL: timeout,
-		Initial: interval,
+		TTL:       timeout,
+		Initial:   interval,
 		MaxJitter: maxJitter,
-		Bof: LinearBackoff,
-		Jf: Jitter,
+		Bof:       LinearBackoff,
+		Jf:        Jitter,
 	})
 }
 
 func RetryExponential(f RetryFunc, timeout time.Duration, initial time.Duration, maxJitter time.Duration) (interface{}, error) {
 	return Retry(f, &JitteredBackoff{
-		TTL: timeout,
-		Initial: initial,
+		TTL:       timeout,
+		Initial:   initial,
 		MaxJitter: maxJitter,
-		Bof: ExponentialBackoff,
-		Jf: Jitter,
+		Bof:       ExponentialBackoff,
+		Jf:        Jitter,
 	})
 }
-
 
 type Waiter interface {
 	WaitOrDie(e error) error
@@ -83,14 +82,15 @@ type PerishableWaiter interface {
 }
 
 type JitteredBackoff struct {
-	dead <-chan time.Time
-	round uint
-	TTL time.Duration
-	Initial time.Duration
+	dead      <-chan time.Time
+	round     uint
+	TTL       time.Duration
+	Initial   time.Duration
 	MaxJitter time.Duration
-	Bof BackoffFunc
-	Jf JitterFunc
+	Bof       BackoffFunc
+	Jf        JitterFunc
 }
+
 func (w *JitteredBackoff) WaitOrDie(e error) error {
 	if w.Bof == nil {
 		panic(errors.New(`Bof is nil`))

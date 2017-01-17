@@ -37,7 +37,7 @@ func LinearBackoff(round uint, initial time.Duration) time.Duration {
 	if initial <= 0 {
 		return time.Duration(0)
 	}
-	return time.Duration(round + 1) * initial
+	return time.Duration(round+1) * initial
 }
 
 func ExponentialBackoff(round uint, initial time.Duration) time.Duration {
@@ -55,5 +55,5 @@ func Jitter(max time.Duration) time.Duration {
 	if max <= 0 {
 		return time.Duration(0)
 	}
-	return time.Duration(rand.Intn(int(max / time.Millisecond))) * time.Millisecond
+	return time.Duration(rand.Intn(int(max/time.Millisecond))) * time.Millisecond
 }

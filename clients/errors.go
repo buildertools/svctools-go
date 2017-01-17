@@ -26,6 +26,7 @@ type ClientError interface {
 type RetriableError struct {
 	E error
 }
+
 func (r RetriableError) IsRetriable() bool {
 	return true
 }
@@ -36,6 +37,7 @@ func (r RetriableError) Error() error {
 type NonRetriableError struct {
 	E error
 }
+
 func (n NonRetriableError) IsRetriable() bool {
 	return false
 }
@@ -47,9 +49,9 @@ func WrapHttpResponseError(r *http.Response, err error) (*http.Response, ClientE
 	if r == nil && err == nil {
 		return nil, nil
 	} else if err != nil {
-		return r, RetriableError{ E: err }
+		return r, RetriableError{E: err}
 	}
-		
+
 	if r.StatusCode == http.StatusBadRequest ||
 		r.StatusCode == http.StatusUnauthorized ||
 		r.StatusCode == http.StatusPaymentRequired ||
@@ -77,7 +79,7 @@ func WrapHttpResponseError(r *http.Response, err error) (*http.Response, ClientE
 		r.StatusCode == http.StatusTooManyRequests ||
 		r.StatusCode == http.StatusRequestHeaderFieldsTooLarge ||
 		r.StatusCode == http.StatusUnavailableForLegalReasons {
-		return r, NonRetriableError{ E: err }
+		return r, NonRetriableError{E: err}
 	} else if r.StatusCode == http.StatusInternalServerError ||
 		r.StatusCode == http.StatusNotImplemented ||
 		r.StatusCode == http.StatusBadGateway ||
@@ -89,7 +91,7 @@ func WrapHttpResponseError(r *http.Response, err error) (*http.Response, ClientE
 		r.StatusCode == http.StatusLoopDetected ||
 		r.StatusCode == http.StatusNotExtended ||
 		r.StatusCode == http.StatusNetworkAuthenticationRequired {
-		return r, RetriableError{ E: err }
+		return r, RetriableError{E: err}
 	}
 	return r, nil
 }

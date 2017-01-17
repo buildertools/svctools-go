@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package clients 
+package clients
 
 import (
 	"testing"
@@ -86,10 +86,9 @@ func TestExponentialBackoff(t *testing.T) {
 	if r := ExponentialBackoff(3, time.Duration(1)); r != time.Duration(8) {
 		t.Fatalf(`Returned %v instead of %v with round: 3 and initial: %v`, r, time.Duration(8), time.Duration(1))
 	}
-	if r := ExponentialBackoff(1, time.Duration(1 << 62)); r != time.Duration(1 << 62) {
+	if r := ExponentialBackoff(1, time.Duration(1<<62)); r != time.Duration(1<<62) {
 		t.Fatalf(`Returned %v instead of %v with round: 1 and initial: %v`, r, time.Duration(1<<62), time.Duration(1<<62))
 	}
 }
 
 func TestJitter(t *testing.T) {}
-

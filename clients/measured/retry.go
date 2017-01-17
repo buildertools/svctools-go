@@ -16,9 +16,9 @@ package measured
 
 import (
 	//"context"
-	"time"
 	"github.com/buildertools/svctools-go/clients"
 	"github.com/rcrowley/go-metrics"
+	"time"
 )
 
 type Collectors struct {
@@ -56,41 +56,41 @@ func Retry(f clients.RetryFunc, pw clients.PerishableWaiter, c Collectors) (inte
 }
 
 func RetryPeriodic(f clients.RetryFunc,
-		timeout time.Duration, 
-		base time.Duration, 
-		maxJitter time.Duration, 
-		c Collectors) (interface{}, error) {
+	timeout time.Duration,
+	base time.Duration,
+	maxJitter time.Duration,
+	c Collectors) (interface{}, error) {
 	return Retry(f, &clients.JitteredBackoff{
-			TTL: timeout,
-			Initial: base,
-			MaxJitter: maxJitter,
-			Bof: clients.ConstantBackoff,
-			Jf: clients.Jitter,
-		}, c)
+		TTL:       timeout,
+		Initial:   base,
+		MaxJitter: maxJitter,
+		Bof:       clients.ConstantBackoff,
+		Jf:        clients.Jitter,
+	}, c)
 }
 func RetryLinear(f clients.RetryFunc,
-		timeout time.Duration, 
-		base time.Duration, 
-		maxJitter time.Duration, 
-		c Collectors) (interface{}, error) {
+	timeout time.Duration,
+	base time.Duration,
+	maxJitter time.Duration,
+	c Collectors) (interface{}, error) {
 	return Retry(f, &clients.JitteredBackoff{
-			TTL: timeout,
-			Initial: base,
-			MaxJitter: maxJitter,
-			Bof: clients.LinearBackoff,
-			Jf: clients.Jitter,
-		}, c)
+		TTL:       timeout,
+		Initial:   base,
+		MaxJitter: maxJitter,
+		Bof:       clients.LinearBackoff,
+		Jf:        clients.Jitter,
+	}, c)
 }
 func RetryExponential(f clients.RetryFunc,
-		timeout time.Duration, 
-		base time.Duration, 
-		maxJitter time.Duration, 
-		c Collectors) (interface{}, error) {
+	timeout time.Duration,
+	base time.Duration,
+	maxJitter time.Duration,
+	c Collectors) (interface{}, error) {
 	return Retry(f, &clients.JitteredBackoff{
-			TTL: timeout,
-			Initial: base,
-			MaxJitter: maxJitter,
-			Bof: clients.ExponentialBackoff,
-			Jf: clients.Jitter,
-		}, c)
+		TTL:       timeout,
+		Initial:   base,
+		MaxJitter: maxJitter,
+		Bof:       clients.ExponentialBackoff,
+		Jf:        clients.Jitter,
+	}, c)
 }

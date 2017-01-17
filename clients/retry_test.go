@@ -27,7 +27,7 @@ func TestRetry(t *testing.T) {
 		jitterCount++
 		return time.Duration(0)
 	}
-	backoffSpy := func(r uint, i time.Duration) time.Duration{
+	backoffSpy := func(r uint, i time.Duration) time.Duration {
 		backoffCount++
 		return time.Duration(0)
 	}
@@ -50,12 +50,12 @@ func TestRetry(t *testing.T) {
 	}
 
 	pw := &JitteredBackoff{
-		TTL: time.Duration(10)*time.Millisecond, 
+		TTL:     time.Duration(10) * time.Millisecond,
 		Initial: time.Duration(0),
-		Jf: jitterSpy,
-		Bof: backoffSpy,
+		Jf:      jitterSpy,
+		Bof:     backoffSpy,
 	}
-	
+
 	r, e := Retry(f, pw)
 	if r != nil {
 		t.Fatal(`Inexplicably returned a non-nil result`)
@@ -70,7 +70,7 @@ func TestRetry(t *testing.T) {
 
 // The difficulty in exhaustive testing of WaitOrDie is that functionality depends on timing.
 // However, it is simple to test that the injected backoff and jitter functions are used
-// and that illegal input is handled correctly. 
+// and that illegal input is handled correctly.
 func TestJitteredBackoffWaitOrDie(t *testing.T) {
 	var pw PerishableWaiter
 	// TTL, Initial, and MaxJitter are all zero values
@@ -107,16 +107,16 @@ func TestJitteredBackoffWaitOrDie(t *testing.T) {
 		jitterCount++
 		return time.Duration(0)
 	}
-	backoffSpy := func(r uint, i time.Duration) time.Duration{
+	backoffSpy := func(r uint, i time.Duration) time.Duration {
 		backoffCount++
 		return time.Duration(0)
 	}
 
 	pw = &JitteredBackoff{
-		TTL: time.Duration(0), 
-		Initial: time.Duration(1)*time.Millisecond,
-		Jf: jitterSpy,
-		Bof: backoffSpy,
+		TTL:     time.Duration(0),
+		Initial: time.Duration(1) * time.Millisecond,
+		Jf:      jitterSpy,
+		Bof:     backoffSpy,
 	}
 	pw.Start()
 	ie := errors.New(`e1`)
@@ -135,10 +135,10 @@ func TestJitteredBackoffWaitOrDie(t *testing.T) {
 	jitterCount = 0
 
 	pw = &JitteredBackoff{
-		TTL: time.Duration(10)*time.Millisecond, 
+		TTL:     time.Duration(10) * time.Millisecond,
 		Initial: time.Duration(0),
-		Jf: jitterSpy,
-		Bof: backoffSpy,
+		Jf:      jitterSpy,
+		Bof:     backoffSpy,
 	}
 	pw.Start()
 	pw.WaitOrDie(nil)
@@ -156,7 +156,7 @@ func TestJitteredBackoffWaitOrDie(t *testing.T) {
 // Validates JitteredBackoff implementation of PerishableWaiter
 func TestJitteredBackoffStartIsDying(t *testing.T) {
 	var pw PerishableWaiter
-	pw = &JitteredBackoff{ TTL: time.Duration(1) }
+	pw = &JitteredBackoff{TTL: time.Duration(1)}
 	if pw.IsDying() {
 		t.Fatal(`Shouldn't be dying yet`)
 	}
