@@ -12,11 +12,9 @@ Many parts of this library are protocol agnostic. For example the retry, backoff
 
 This is a simple library with a few handy functions. Everything is opt-in. Here are a few highlights...
 
+Attempt to fetch http://someawesomeservice.com/v1/whatever for 30 seconds, retrying on IO errors and 500 level status codes. Retry using an exponential backoff strategy with a base backoff of 50 millis and between 0 and 50 millis of jitter.
+
 ````
-// Attempt to fetch http://someawesomeservice.com/v1/whatever for 30 seconds, 
-// retrying on IO errors and 500 level status codes. Retry using an exponential
-// backoff strategy with a base backoff of 50 millis and between 0 and 50 
-// millis of jitter.
 r, err := clients.RetryExponential(
 	func() {
 		return clients.WrapHttpResponseError(http.Get(`http://someawsomeservice.com/v1/whatever`))
@@ -24,8 +22,11 @@ r, err := clients.RetryExponential(
 	time.Duration(30)*time.Second,
 	time.Duration(50)*time.Millisecond,
 	time.Duration(50)*time.Millisecond)
+````
 
-// Ping a local TCP socket every second for 30 seconds, fail if ping fails
+Ping a local TCP socket every second for 30 seconds, fail if ping fails
+
+````
 _, e := clients.RetryPeriodic(
 	func() {
 		conn, err := net.Dial("tcp", "localhost:3000")
@@ -38,8 +39,11 @@ _, e := clients.RetryPeriodic(
 	time.Duration(30)*time.Second,
 	time.Duration(1)*time.Second,
 	time.Duration(0))
+````
 
-// Mix and match your own backoff and jitter tooling
+Mix and match your own backoff and jitter tooling
+
+````
 r, e := clients.Retry(
 	yourRetriableFunction,
 	&clients.JitteredBackoff{
