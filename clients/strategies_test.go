@@ -5,6 +5,30 @@ import (
 	"time"
 )
 
+func TestNoBackoff(t *testing.T) {
+	if NoBackoff(0, time.Duration(0)) != time.Duration(0) {
+		t.Fatal(`{0,0} returned non 0`)
+	}
+	if NoBackoff(0, time.Duration(1)) != time.Duration(0) {
+		t.Fatal(`{0,1} returned non 0`)
+	}
+	if NoBackoff(1, time.Duration(0)) != time.Duration(0) {
+		t.Fatal(`{1,0} returned non 0`)
+	}
+	if NoBackoff(1, time.Duration(1)) != time.Duration(0) {
+		t.Fatal(`{1,1} returned non 0`)
+	}
+}
+
+func TestNoJitter(t *testing.T) {
+	if NoJitter(time.Duration(0)) != time.Duration(0) {
+		t.Fatal(`{0} returned non 0`)
+	}
+	if NoJitter(time.Duration(1)) != time.Duration(0) {
+		t.Fatal(`{1} returned non 0`)
+	}
+}
+
 func TestConstantBackoff(t *testing.T) {
 	if ConstantBackoff(0, time.Duration(1)) != time.Duration(1) {
 		t.Fatalf(`Failed to echo %v with round: 0`, time.Duration(1))

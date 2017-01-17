@@ -1,6 +1,7 @@
 package clients
 
 import (
+	"errors"
 	"context"
 	"time"
 )
@@ -60,6 +61,7 @@ type Waiter interface {
 }
 type Perishable interface {
 	Start()
+	IsDying() bool
 }
 type PerishableWaiter interface {
 	Perishable
@@ -76,6 +78,12 @@ type JitteredBackoff struct {
 	Jf JitterFunc
 }
 func (w *JitteredBackoff) WaitOrDie(e error) error {
+	if w.Bof == nil {
+		panic(errors.New(`Bof is nil`))
+	}
+	if w.Jf == nil {
+		panic(errors.New(`Jf is nil`))
+	}
 	var ej, ei time.Duration
 	// treat negative maxJitter like zero jitter
 	if w.MaxJitter >= 0 && int(w.MaxJitter) > 0 {
@@ -96,4 +104,7 @@ func (w *JitteredBackoff) WaitOrDie(e error) error {
 }
 func (w *JitteredBackoff) Start() {
 	w.dead = time.After(w.TTL)
+}
+func (w *JitteredBackoff) IsDying() bool {
+	return w.dead != nil
 }
