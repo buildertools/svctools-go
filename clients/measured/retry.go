@@ -17,16 +17,24 @@ package measured
 import (
 	//"context"
 	"github.com/buildertools/svctools-go/clients"
-	"github.com/rcrowley/go-metrics"
+	// "github.com/rcrowley/go-metrics"
 	"time"
 )
 
 type Collectors struct {
-	AttemptCounter metrics.Counter
-	ErrorCounter   metrics.Counter
-	FatalCounter   metrics.Counter
-	TotalTime      metrics.Timer
-	AttemptTime    metrics.Timer
+	AttemptCounter Counter
+	ErrorCounter   Counter
+	FatalCounter   Counter
+	TotalTime      Timer
+	AttemptTime    Timer
+}
+
+type Timer interface {
+	Update(time.Duration)
+}
+
+type Counter interface {
+	Inc(int64)
 }
 
 func Retry(f clients.RetryFunc, pw clients.PerishableWaiter, c Collectors) (interface{}, error) {
