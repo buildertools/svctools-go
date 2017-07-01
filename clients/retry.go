@@ -30,11 +30,11 @@ func Retry(f RetryFunc, pw PerishableWaiter) (interface{}, error) {
 		if err == nil {
 			return result, nil
 		} else if !err.IsRetriable() {
-			return nil, err.Error()
+			return result, err.Error()
 		}
 
 		if e := pw.WaitOrDie(err.Error()); e != nil {
-			return nil, err.Error()
+			return result, err.Error()
 		}
 	}
 }
