@@ -56,12 +56,12 @@ func Retry(f clients.RetryFunc, pw clients.PerishableWaiter, c Collectors) (inte
 			return result, nil
 		} else if !err.IsRetriable() {
 			c.Error.Mark(1)
-			return nil, err.Error()
+			return result, err.Error()
 		}
 		c.Fatal.Mark(1)
 
 		if e := pw.WaitOrDie(err.Error()); e != nil {
-			return nil, err.Error()
+			return result, err.Error()
 		}
 	}
 }
